@@ -1,5 +1,16 @@
 <?php
-
+/**
+ * 
+ * Just a debug class that adds readability to dumps with indentations, color coding and type/parameters.
+ * 
+ * Usage:
+ * debug::dump($my_var); or debug::_dump($my_var); for silent version.
+ * $my_var can be anything.
+ * 
+ * Known issues:
+ *  - Infinite recursions are not handled.
+ *  - _dump has (loads of) indentation issues
+ */
 class debug
 {
 	private static $colors = array("green", "red", "blue", "orange", "purple");
