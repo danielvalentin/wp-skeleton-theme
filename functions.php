@@ -47,8 +47,8 @@ register_sidebar();
  */
 function load_styles()
 {
-	wp_enqueue_style('reset', TEMPLATEPATH . '/media/css/reset.css');
-	wp_enqueue_style('style', TEMPLATEPATH . '/style.css', array('reset'));
+	wp_enqueue_style('reset', get_bloginfo('template_directory') . '/media/css/reset.css');
+	wp_enqueue_style('style', get_bloginfo('template_directory') . '/style.css', array('reset'));
 	//wp_enqueue_style('fancybox', TEMPLATEPATH . '/media/js/fancybox/jquery.fancybox-1.3.1.css');
 }
 function load_scripts()
