@@ -59,6 +59,9 @@ function load_scripts()
 	//wp_register_script('cufon', get_bloginfo('template_directory') . '/media/js/cufon.js');
 	wp_register_script('scripts', get_bloginfo('template_directory') . '/media/js/scripts.js', array('jquery'));
 	//wp_register_script('fancybox', get_bloginfo('template_directory') . '/media/libs/fancybox/jquery.fancybox-1.3.1.pack.js', array('jquery'));
+	echo '<script type="text/javascript">';
+	echo 'var url = "' . get_bloginfo('url') . '";"';
+	echo '</script>';
 	wp_print_scripts(array('jquery', 'scripts'));
 }
 if(!is_admin())
