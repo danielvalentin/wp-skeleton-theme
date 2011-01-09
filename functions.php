@@ -9,7 +9,7 @@ session_start();
  *  - Adding theme support: post-thumbnails, Menus, Sidebar
  *  - Loading scripts and styles
  *  - Custom comments function
- *  - "First" and "last" CSS classes added to widgets
+ *  - "First" and "last" CSS classes added to widgets.
  * 
  *    DISABLED:
  *  - Admin menu and options pages
