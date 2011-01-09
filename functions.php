@@ -9,6 +9,7 @@ session_start();
  *  - Adding theme support: post-thumbnails, Menus, Sidebar
  *  - Loading scripts and styles
  *  - Custom comments function
+ *  - "First" and "last" CSS classes added to widgets
  * 
  *    DISABLED:
  *  - Admin menu and options pages
@@ -60,7 +61,7 @@ function load_scripts()
 	wp_register_script('scripts', get_bloginfo('template_directory') . '/media/js/scripts.js', array('jquery'));
 	//wp_register_script('fancybox', get_bloginfo('template_directory') . '/media/libs/fancybox/jquery.fancybox-1.3.1.pack.js', array('jquery'));
 	echo '<script type="text/javascript">';
-	echo 'var url = "' . get_bloginfo('url') . '";"';
+	echo 'var url = "' . get_bloginfo('url') . '";';
 	echo '</script>';
 	wp_print_scripts(array('jquery', 'scripts'));
 }
@@ -128,6 +129,37 @@ if($_GET['s'])
 	add_filter('the_excerpt', 'highlight_searchterm');
 	add_filter('the_content', 'highlight_searchterm');
 }
+
+/**
+ * Add "first" and "last" CSS classes to dynamic sidebar widgets. Also adds numeric index class for each widget (widget-1, widget-2, etc.)
+ * http://wordpress.org/support/topic/how-to-first-and-last-css-classes-for-sidebar-widgets
+ */
+function widget_first_last_classes($params) {
+
+	global $my_widget_num; // Global a counter array
+	$this_id = $params[0]['id']; // Get the id for the current sidebar we're processing
+	$arr_registered_widgets = wp_get_sidebars_widgets(); // Get an array of ALL registered widgets	
+
+	if(!$my_widget_num) {// If the counter array doesn't exist, create it
+		$my_widget_num = array();
+	}
+	if(isset($my_widget_num[$this_id])) { // See if the counter array has an entry for this sidebar
+		$my_widget_num[$this_id] ++;
+	} else { // If not, create it starting with 1
+		$my_widget_num[$this_id] = 1;
+	}
+	$class = 'class="widget-' . $my_widget_num[$this_id] . ' '; // Add a widget number class for additional styling options
+	if($my_widget_num[$this_id] == 1) { // If this is the first widget
+		$class .= 'widget-first ';
+	}
+	if($my_widget_num[$this_id] == count($arr_registered_widgets[$this_id])) { // If this is the last widget
+		$class .= 'widget-last ';
+	}
+	//$params[0]['before_widget'] = str_replace('class="', $class, $params[0]['before_widget']); // Insert our new classes into "before widget"
+	$params[0]['before_widget'] = preg_replace('/class=\"/', "$class", $params[0]['before_widget'], 1);
+	return $params;
+}
+add_filter('dynamic_sidebar_params','widget_first_last_classes');
 
 /**
  * DISABLED BY DEFAULT
