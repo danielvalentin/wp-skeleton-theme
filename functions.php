@@ -5,6 +5,7 @@ session_start();
  * 
  * TOC:
  *  - Includes
+ * 	- Remove unwanted metas/links
  *  - Fixing æ & ø in slugs
  *  - Adding theme support: post-thumbnails, Menus, Sidebar
  *  - Loading scripts and styles
@@ -22,6 +23,13 @@ session_start();
   * INCLUDES
   */
 include('classes/debug.php');
+
+/**
+ * Remove unwanted metas/links
+ */
+remove_action('wp_head', 'wp_generator');
+remove_action('wp_head', 'wlwmanifest_link');
+remove_action('wp_head', 'rsd_link');
 
 /**
  * FIX Æ & Ø IN SLUGS
