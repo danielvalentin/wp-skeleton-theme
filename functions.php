@@ -1,35 +1,19 @@
 <?php
 session_start();
 
-/**
- * 
- * TOC:
- *  - Includes
- * 	- Remove unwanted metas/links
- *  - Fixing æ & ø in slugs
- *  - Adding theme support: post-thumbnails, Menus, Sidebar
- *  - Loading scripts and styles
- *  - Custom comments function
- *  - "First" and "last" CSS classes added to widgets.
- * 
- *    DISABLED:
- *  - Admin menu and options pages
- *  - Loading widgets
- *  - Custom headers and backgrounds
- * 
- */
- 
  /**
   * INCLUDES
   */
 include('classes/debug.php');
 
 /**
- * Remove unwanted metas/links
+ * Remove unwanted info
  */
-remove_action('wp_head', 'wp_generator');
-remove_action('wp_head', 'wlwmanifest_link');
-remove_action('wp_head', 'rsd_link');
+function kill_generator()
+{
+	return '';
+}
+add_filter('the_generator', 'kill_generator');
 
 /**
  * FIX Æ & Ø IN SLUGS
