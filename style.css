@@ -9,3 +9,11 @@ body
 {
 	background:#F2F2F2;
 }
+.alignleft
+{
+	float:left;
+}
+.alignright
+{
+	float:right;
+}
