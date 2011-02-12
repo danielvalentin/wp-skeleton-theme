@@ -17,3 +17,20 @@ body
 {
 	float:right;
 }
+.searchterm
+{
+	background:yellow;
+	font-weight:bold;
+}
+.hidden
+{
+	display:none;
+}
+.ok
+{
+	color:#008000;
+}
+.error
+{
+	color:#C00000;
+}
