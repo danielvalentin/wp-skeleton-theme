@@ -17,5 +17,15 @@ if(have_posts())
 <?php
 	}
 }
+?>
+
+<div class="pagination">
+	
+<?php
+	echo pagination();
+?>
+</div>
+
+<?php
 
 get_footer();
