@@ -181,6 +181,16 @@ function widget_first_last_classes($params) {
 add_filter('dynamic_sidebar_params','widget_first_last_classes');
 
 /**
+ * Searches for posts - Used on the 404 page
+ */
+function search($term)
+{
+	global $wpdb;
+	$query = $wpdb -> prepare("SELECT * FROM `wp_posts` WHERE `post_title` LIKE '%s' AND `post_status` = 'publish' AND (`post_type` = 'post' OR `post_type` = 'page')", '%' . $term . '%');
+	return $wpdb -> get_results($query);
+}
+
+/**
  * DISABLED BY DEFAULT
  */
 
