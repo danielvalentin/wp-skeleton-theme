@@ -115,12 +115,39 @@ if($_GET['s'])
 {
 	function highlight_searchterm($content)
 	{
-		$term = strip_tags($_GET['s']);
-		return str_replace($term, '<strong class="searchterm">' . $term . '</strong>', $content);
+		$term = strtolower(strip_tags($_GET['s']));
+		return preg_replace('/(' . $term . ')/i', '<strong class="searchterm">$1</strong>', $content);
 	}
 	add_filter('the_excerpt', 'highlight_searchterm');
 	add_filter('the_content', 'highlight_searchterm');
 }
+// Allow <strong> tags in excerpt (searchterms)
+function new_trim_excerpt($text)
+{
+	$raw_excerpt = $text;
+	if ( '' == $text ) {
+		$text = get_the_content('');
+
+		$text = strip_shortcodes( $text );
+
+		$text = apply_filters('the_content', $text);
+		$text = str_replace(']]>', ']]&gt;', $text);
+		$text = strip_tags($text, '<strong>');
+		$excerpt_length = apply_filters('excerpt_length', 55);
+		$excerpt_more = apply_filters('excerpt_more', ' ' . '[...]');
+		$words = preg_split("/(<a.*?a>)|\n|\r|\t|\s/", $text, $excerpt_length + 1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+		if ( count($words) > $excerpt_length ) {
+			array_pop($words);
+			$text = implode(' ', $words);
+			$text = $text . $excerpt_more;
+		} else {
+			$text = implode(' ', $words);
+		}
+	}
+	return apply_filters('wp_trim_excerpt', $text, $raw_excerpt);
+}
+remove_filter('the_excerpt', 'wp_trim_excerpt');
+add_filter('the_excerpt', 'new_trim_excerpt');
 
 /**
  * Add "first" and "last" CSS classes to dynamic sidebar widgets. Also adds numeric index class for each widget (widget-1, widget-2, etc.)
