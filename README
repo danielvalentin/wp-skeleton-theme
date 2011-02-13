@@ -1,5 +1,7 @@
 This is the standard template I use when starting a new WP project.
 
 It has the pagetemplates I most use along with some often used functions like pagination, search-highlighting, etc.
+There's an auto-email-camouflaging function and some pretty usefull utility functions.
+Mobile detection is included. When site is visited by a mobile user, the files in the "mobile" folder are used.
 
 Feel free to use, fork and contribute. Be aware before you use it though, that most of the text (which isn't a lot, but stuff like error messages) is in Danish, so review the pages.
