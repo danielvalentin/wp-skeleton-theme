@@ -1,13 +1,13 @@
 <?php
 get_header();
 
-$page = get_page(ERROR_PAGE_ID);
+$page = error404();
 
 ?>
 <div class="post">
-	<h1><?php echo $page -> post_title; ?></h1>
+	<h1><?php echo apply_filters('the_title', $page -> post_title); ?></h1>
 	<div>
-		<?php echo $page -> post_content; ?>
+		<?php echo apply_filters('the_content', $page -> post_content); ?>
 		
 		<div>
 			<h3>Her er en søgning på siden efter lignende indhold:</h3>
