@@ -7,6 +7,25 @@ define('ERROR_PAGE_ID', 1);
   * INCLUDES
   */
 include('classes/debug.php');
+include('classes/mobile.php');
+
+/**
+ * Mobile detection
+ */
+ $detection = new mobile();
+ if($detection -> isMobile())
+ {
+ 	function switch_to_mobile_templates($dir)
+	{
+		$template = dirname(__FILE__) . '/mobile/index.php';
+		if(is_page_template('contact.php'))
+		{
+			$template = dirname(__FILE__) . '/mobile/contact.php';
+		}
+		return $template;
+	}
+	add_filter('template_include', 'switch_to_mobile_templates');
+}
 
 /**
  * Remove unwanted info
