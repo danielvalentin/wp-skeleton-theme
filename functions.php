@@ -51,8 +51,9 @@ add_filter('sanitize_title', 'improved_sanitize_title', 0);
  * ADDING THEME SUPPORT
  */
 add_theme_support('post-thumbnails');
-register_nav_menus(array('topmenu' => 'Hovedmenuen', 'moremenu' => 'Lille menu over hovedmenu', 'footermenu' => 'Footer menu'));
-register_sidebar();
+set_post_thumbnail_size(100, 100, true);
+register_nav_menus(array('mainmenu' => 'Main menu'));
+register_sidebar(array('name' => 'Sidebar', 'description' => 'Main sidebar'));
 
 /**
  * LOADING SCRIPTS AND STYLES
@@ -61,16 +62,12 @@ function load_styles()
 {
 	wp_enqueue_style('reset', get_bloginfo('template_directory') . '/media/css/reset.css');
 	wp_enqueue_style('style', get_bloginfo('template_directory') . '/style.css', array('reset'));
-	//wp_enqueue_style('fancybox', TEMPLATEPATH . '/media/js/fancybox/jquery.fancybox-1.3.1.css');
 }
 function load_scripts()
 {
 	wp_deregister_script('jquery');
 	wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js', array(), '1.4.2');
-	//wp_register_script('jqueryswfobject', get_bloginfo('template_directory') . '/media/js/jquery.swfobject.js', array('jquery'));
-	//wp_register_script('cufon', get_bloginfo('template_directory') . '/media/js/cufon.js');
 	wp_register_script('scripts', get_bloginfo('template_directory') . '/media/js/scripts.js', array('jquery'));
-	//wp_register_script('fancybox', get_bloginfo('template_directory') . '/media/libs/fancybox/jquery.fancybox-1.3.1.pack.js', array('jquery'));
 	echo '<script type="text/javascript">';
 	echo 'var url = "' . get_bloginfo('url') . '";';
 	echo '</script>';
@@ -123,7 +120,7 @@ function theme_comments($comment, $args, $depth)
 		case 'trackback' :
 	?>
 			<li class="post pingback">
-				<p><?php _e( 'Pingback:', 'twentyten' ); ?> <?php comment_author_link(); ?><?php edit_comment_link( __('(Edit)', 'twentyten'), ' ' ); ?></p>
+				<p>Pingback <?php comment_author_link(); ?><?php edit_comment_link( 'Rediger', ' ' ); ?></p>
 	<?php
 			break;
 	}
