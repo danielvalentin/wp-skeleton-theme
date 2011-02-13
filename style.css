@@ -34,3 +34,18 @@ body
 {
 	color:#C00000;
 }
+.input
+{
+	margin-bottom:5px;
+}
+	.input label
+	{
+		display:block;
+		position:absolute;
+		width:100px;
+	}
+	.input input,
+	.input textarea
+	{
+		margin-left:110px;
+	}
