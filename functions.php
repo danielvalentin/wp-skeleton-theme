@@ -1,8 +1,6 @@
 <?php
 session_start();
 
-define('ERROR_PAGE_ID', 1);
-
  /**
   * INCLUDES
   */
