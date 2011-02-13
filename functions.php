@@ -11,7 +11,7 @@ include('classes/mobile.php');
  * Mobile detection
  */
  $detection = new mobile();
- if($detection -> isMobile())
+ if(false&&$detection -> isMobile())
  {
  	function switch_to_mobile_templates($dir)
 	{
