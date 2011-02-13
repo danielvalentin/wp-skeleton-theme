@@ -229,6 +229,61 @@ function pagination()
 }
 
 /**
+ * Fetch the page thats titled "footer" (case insensitive)
+ */
+function footer()
+{
+	global $wpdb;
+	$content = $wpdb -> get_var("SELECT `post_content` FROM $wpdb->posts WHERE LOWER(`post_title`) = 'footer' AND `post_type` = 'page' AND `post_status` = 'publish' LIMIT 1");
+	if($content)
+	{
+		return apply_filters('the_content', $content); 
+	}
+	return '';
+}
+/**
+ * Fetch the page thats titled "404"
+ */
+function error404()
+{
+	global $wpdb;
+	$content = $wpdb -> get_row("SELECT * FROM $wpdb->posts WHERE LOWER(`post_title`) = '404' AND `post_type` = 'page' AND `post_status` = 'publish' LIMIT 1");
+	if($content)
+	{
+		return $content; 
+	}
+	return '';
+}
+
+/**
+ * Camouflage emails in pages and posts
+ */
+function camouflage_emails($content)
+{
+	$content = preg_replace_callback('/\b([A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4})\b/i', 'obfuscate_email', $content);
+	return $content;
+}
+add_filter('the_content', 'camouflage_emails');
+function obfuscate_email($string)
+{
+	$string = $string[0];
+	$safe = '';
+	foreach (str_split($string) as $letter)
+	{
+		switch (rand(1, 3))
+		{
+			// HTML entity code
+			case 1: $safe .= '&#'.ord($letter).';'; break;
+			// Hex character code
+			case 2: $safe .= '&#x'.dechex(ord($letter)).';'; break;
+			// Raw (no) encoding
+			case 3: $safe .= $letter;
+		}
+	}
+	return str_replace('@', '&#64;', $safe);
+}
+
+/**
  * DISABLED BY DEFAULT
  */
 
