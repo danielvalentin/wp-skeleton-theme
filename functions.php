@@ -301,6 +301,12 @@ function obfuscate_email($string)
  * DISABLED BY DEFAULT
  */
 
+/**
+ * Add widget
+ */
+/*include('widgets/widget.php');
+add_action('widgets_init', create_function('', 'return register_widget("Mywidget_Widget");'));
+
  /**
   * ADMIN OPTIONS PAGES
   */
