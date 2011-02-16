@@ -33,6 +33,12 @@ function kill_generator()
 	return '';
 }
 add_filter('the_generator', 'kill_generator');
+add_action('wp_head', 'remove_widget_action', 1); // Recent comments widget CSS
+function remove_widget_action() {
+    global $wp_widget_factory;
+
+    remove_action( 'wp_head', array($wp_widget_factory->widgets['WP_Widget_Recent_Comments'], 'recent_comments_style') );
+}
 
 /**
  * FIX Æ & Ø IN SLUGS
