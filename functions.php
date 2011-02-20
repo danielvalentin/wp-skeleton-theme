@@ -214,36 +214,39 @@ function search($term)
 
 function pagination()
 {
-	global $wp_query, $paged;
-	$total_posts = wp_count_posts() -> publish;
-	$current_page = $paged;
-	$current_page = (($paged == 0) ? 1 : $paged);
-	$posts_per_page = get_option('posts_per_page', true); 
-	$num_pages = ceil($total_posts / $posts_per_page);
 	$returner = '';
-	
-	if($current_page > 1)
+	if(!is_single())
 	{
-		$returner .= '<a href="' . get_pagenum_link($current_page - 1) . '" title="Forrige side">&laquo;</a> ';
-	}
-	
-	if($num_pages > 1)
-	{
-		for($i = 1; $i <= $num_pages; $i++)
+		global $wp_query, $paged;
+		$total_posts = $wp_query -> found_posts;//wp_count_posts() -> publish;
+		$current_page = $paged;
+		$current_page = (($paged == 0) ? 1 : $paged);
+		$posts_per_page = get_option('posts_per_page', true); 
+		$num_pages = ceil($total_posts / $posts_per_page);
+		
+		if($current_page > 1)
 		{
-			if($current_page != $i)
+			$returner .= '<a href="' . get_pagenum_link($current_page - 1) . '" title="Forrige side">&laquo;</a> ';
+		}
+		
+		if($num_pages > 1)
+		{
+			for($i = 1; $i <= $num_pages; $i++)
 			{
-				$returner .= '<a href="' . get_pagenum_link($i) . '" title="Gå til side ' . $i . '" class="page">' . $i . '</a>';
-			}
-			else
-			{
-				$returner .= '<span class="current">' . $i . '</span>';
+				if($current_page != $i)
+				{
+					$returner .= '<a href="' . get_pagenum_link($i) . '" title="Gå til side ' . $i . '" class="page">' . $i . '</a>';
+				}
+				else
+				{
+					$returner .= '<span class="current">' . $i . '</span>';
+				}
 			}
 		}
-	}
-	if($current_page < $num_pages && $num_pages > 1)
-	{
-		$returner .= ' <a href="' . get_pagenum_link($current_page + 1) . '" title="Næste side">&raquo;</a>';
+		if($current_page < $num_pages && $num_pages > 1)
+		{
+			$returner .= ' <a href="' . get_pagenum_link($current_page + 1) . '" title="Næste side">&raquo;</a>';
+		}
 	}
 	return $returner;
 }
