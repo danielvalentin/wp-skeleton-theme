@@ -254,7 +254,7 @@ function pagination()
 /**
  * Fetch the page thats titled "footer" (case insensitive)
  */
-function footer()
+function footer($default = '')
 {
 	global $wpdb;
 	$content = $wpdb -> get_var("SELECT `post_content` FROM $wpdb->posts WHERE LOWER(`post_title`) = 'footer' AND `post_type` = 'page' AND `post_status` = 'publish' LIMIT 1");
@@ -262,20 +262,24 @@ function footer()
 	{
 		return apply_filters('the_content', $content); 
 	}
-	return '';
+	return $default;
 }
 /**
  * Fetch the page thats titled "404"
  */
-function error404()
+function error404($default = '<h1>404 Siden blev ikke fundet</h1><p>Siden du leder efter findes ikke på denne URL.</p>')
 {
 	global $wpdb;
 	$content = $wpdb -> get_row("SELECT * FROM $wpdb->posts WHERE LOWER(`post_title`) = '404' AND `post_type` = 'page' AND `post_status` = 'publish' LIMIT 1");
 	if($content)
 	{
-		return $content; 
+		$returner = '<h1>' . $content -> post_title . '</h1>';
+		$returner .= '<div class="text">';
+		$returner .= apply_filters('the_content', $content -> post_content);
+		$returner .= '</div>';
+		return $returner;
 	}
-	return '';
+	return $default;
 }
 
 /**
