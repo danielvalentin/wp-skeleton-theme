@@ -86,6 +86,64 @@ if(!is_admin())
 }
 
 /**
+ * Breadcrumbs
+ */
+function breadcrumbs($post_id, $seperator = '&raquo;')
+{
+	$crumbs = array();
+	if(!is_home() && !is_front_page())
+	{
+		$post = get_post($post_id);
+		if(is_page($post_id))
+		{
+			$crumbs[] = $seperator . ' ' . $post -> post_title;
+			while($post -> post_parent != 0)
+			{
+				$post = get_post($post -> post_parent);
+				$crumbs[] = $seperator . ' ' . '<a href="' . get_permalink($post -> ID) . '">' . $post -> post_title . '</a>';
+			}
+		}
+		elseif(is_tag())
+		{
+			$crumbs[] = $seperator . ' ' . single_tag_title('', false);
+		}
+		elseif(is_category())
+		{
+			$crumbs[] = $seperator . ' ' . single_cat_title('', false);
+			$cat = get_category(get_query_var('cat'));
+			while($cat->parent != 0)
+			{
+				$cat = get_category($cat -> parent);
+				$crumbs[] = $seperator . ' <a href="' . get_category_link($cat -> term_id) . '" title="' . $cat -> name . '">' . $cat -> name . '</a>';
+			}
+		}
+		elseif(is_search())
+		{
+			$crumbs[] = $seperator . ' Søgning på "' . get_query_var('s') . '"';
+		}
+		elseif(is_404())
+		{
+			$crumbs[] = $seperator . ' 404';
+		}
+		else
+		{
+			$crumbs[] = $seperator . ' ' . $post -> post_title;
+			$cats = get_the_category();
+			$cat = get_category($cats[0]->term_id);
+			$crumbs[] = $seperator . ' <a href="' . get_category_link($cat -> term_id) . '" title="' . $cat -> name . '">' . $cat -> name . '</a>';
+			while($cat->parent != 0)
+			{
+				$cat = get_category($cat -> parent);
+				$crumbs[] = $seperator . ' <a href="' . get_category_link($cat -> term_id) . '" title="' . $cat -> name . '">' . $cat -> name . '</a>';
+			}
+		}
+		$crumbs[] = '<a href="' . get_bloginfo('url') . '" title="Forside">Forside</a>';
+	}
+	$crumbs = implode(' ', array_reverse($crumbs));
+	return $crumbs;
+}
+
+/**
  * CUSTOM COMMENT FUNCTION
  */
 function theme_comments($comment, $args, $depth)
