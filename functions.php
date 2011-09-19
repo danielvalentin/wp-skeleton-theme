@@ -6,52 +6,14 @@ session_start();
   */
 include('classes/debug.php');
 include('classes/mobile.php');
-
-/**
- * Mobile detection
- */
- $detection = new mobile();
- if(false&&$detection -> isMobile())
- {
- 	function switch_to_mobile_templates($dir)
-	{
-		$template = dirname(__FILE__) . '/mobile/index.php';
-		if(is_page_template('contact.php'))
-		{
-			$template = dirname(__FILE__) . '/mobile/contact.php';
-		}
-		return $template;
-	}
-	add_filter('template_include', 'switch_to_mobile_templates');
-}
-
-/**
- * Remove unwanted info
- */
-function kill_generator()
-{
-	return '';
-}
-add_filter('the_generator', 'kill_generator');
-add_action('wp_head', 'remove_widget_action', 1); // Recent comments widget CSS
-function remove_widget_action() {
-    global $wp_widget_factory;
-
-    remove_action( 'wp_head', array($wp_widget_factory->widgets['WP_Widget_Recent_Comments'], 'recent_comments_style') );
-}
-
-/**
- * FIX Æ & Ø IN SLUGS
- */
-function improved_sanitize_title($title)
-{
-	$title = str_replace('æ', 'ae', $title);
-	$title = str_replace('ø', 'oe', $title);
-	$title = str_replace('Æ', 'AE', $title);
-	$title = str_replace('Ø', 'OE', $title);
-	return $title;
-}
-add_filter('sanitize_title', 'improved_sanitize_title', 0);
+include('includes/functions.php');
+include('includes/fixes.php');
+include('includes/improvements.php');
+include('includes/widget-page-filtering.php');
+include('includes/seo/seo.php');
+include('includes/address-widget.php');
+include('includes/spacer-widget.php');
+include('includes/frontpage-slideshow.php');
 
 /**
  * ADDING THEME SUPPORT
@@ -83,64 +45,6 @@ if(!is_admin())
 {
 	add_action('init', 'load_styles');
 	add_action('wp_footer', 'load_scripts');
-}
-
-/**
- * Breadcrumbs
- */
-function breadcrumbs($post_id, $seperator = '&raquo;')
-{
-	$crumbs = array();
-	if(!is_home() && !is_front_page())
-	{
-		$post = get_post($post_id);
-		if(is_page($post_id))
-		{
-			$crumbs[] = $seperator . ' ' . $post -> post_title;
-			while($post -> post_parent != 0)
-			{
-				$post = get_post($post -> post_parent);
-				$crumbs[] = $seperator . ' ' . '<a href="' . get_permalink($post -> ID) . '">' . $post -> post_title . '</a>';
-			}
-		}
-		elseif(is_tag())
-		{
-			$crumbs[] = $seperator . ' ' . single_tag_title('', false);
-		}
-		elseif(is_category())
-		{
-			$crumbs[] = $seperator . ' ' . single_cat_title('', false);
-			$cat = get_category(get_query_var('cat'));
-			while($cat->parent != 0)
-			{
-				$cat = get_category($cat -> parent);
-				$crumbs[] = $seperator . ' <a href="' . get_category_link($cat -> term_id) . '" title="' . $cat -> name . '">' . $cat -> name . '</a>';
-			}
-		}
-		elseif(is_search())
-		{
-			$crumbs[] = $seperator . ' Søgning på "' . get_query_var('s') . '"';
-		}
-		elseif(is_404())
-		{
-			$crumbs[] = $seperator . ' 404';
-		}
-		else
-		{
-			$crumbs[] = $seperator . ' ' . $post -> post_title;
-			$cats = get_the_category();
-			$cat = get_category($cats[0]->term_id);
-			$crumbs[] = $seperator . ' <a href="' . get_category_link($cat -> term_id) . '" title="' . $cat -> name . '">' . $cat -> name . '</a>';
-			while($cat->parent != 0)
-			{
-				$cat = get_category($cat -> parent);
-				$crumbs[] = $seperator . ' <a href="' . get_category_link($cat -> term_id) . '" title="' . $cat -> name . '">' . $cat -> name . '</a>';
-			}
-		}
-		$crumbs[] = '<a href="' . get_bloginfo('url') . '" title="Forside">Forside</a>';
-	}
-	$crumbs = implode(' ', array_reverse($crumbs));
-	return $crumbs;
 }
 
 /**
@@ -190,187 +94,27 @@ function theme_comments($comment, $args, $depth)
 	}
 }
 
-// Highlight searchterms
-if($_GET['s'])
-{
-	function highlight_searchterm($content)
-	{
-		$term = strtolower(strip_tags($_GET['s']));
-		return preg_replace('/(' . $term . ')/i', '<strong class="searchterm">$1</strong>', $content);
-	}
-	add_filter('the_excerpt', 'highlight_searchterm');
-	add_filter('the_content', 'highlight_searchterm');
-}
-// Allow <strong> tags in excerpt (searchterms)
-function new_trim_excerpt($text)
-{
-	$raw_excerpt = $text;
-	if ( '' == $text ) {
-		$text = get_the_content('');
-
-		$text = strip_shortcodes( $text );
-
-		$text = apply_filters('the_content', $text);
-		$text = str_replace(']]>', ']]&gt;', $text);
-		$text = strip_tags($text, '<strong>');
-		$excerpt_length = apply_filters('excerpt_length', 55);
-		$excerpt_more = apply_filters('excerpt_more', ' ' . '[...]');
-		$words = preg_split("/(<a.*?a>)|\n|\r|\t|\s/", $text, $excerpt_length + 1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
-		if ( count($words) > $excerpt_length ) {
-			array_pop($words);
-			$text = implode(' ', $words);
-			$text = $text . $excerpt_more;
-		} else {
-			$text = implode(' ', $words);
-		}
-	}
-	return apply_filters('wp_trim_excerpt', $text, $raw_excerpt);
-}
-remove_filter('the_excerpt', 'wp_trim_excerpt');
-add_filter('the_excerpt', 'new_trim_excerpt');
-
-/**
- * Add "first" and "last" CSS classes to dynamic sidebar widgets. Also adds numeric index class for each widget (widget-1, widget-2, etc.)
- * http://wordpress.org/support/topic/how-to-first-and-last-css-classes-for-sidebar-widgets
- */
-function widget_first_last_classes($params) {
-
-	global $my_widget_num; // Global a counter array
-	$this_id = $params[0]['id']; // Get the id for the current sidebar we're processing
-	$arr_registered_widgets = wp_get_sidebars_widgets(); // Get an array of ALL registered widgets	
-
-	if(!$my_widget_num) {// If the counter array doesn't exist, create it
-		$my_widget_num = array();
-	}
-	if(isset($my_widget_num[$this_id])) { // See if the counter array has an entry for this sidebar
-		$my_widget_num[$this_id] ++;
-	} else { // If not, create it starting with 1
-		$my_widget_num[$this_id] = 1;
-	}
-	$class = 'class="widget-' . $my_widget_num[$this_id] . ' '; // Add a widget number class for additional styling options
-	if($my_widget_num[$this_id] == 1) { // If this is the first widget
-		$class .= 'widget-first ';
-	}
-	if($my_widget_num[$this_id] == count($arr_registered_widgets[$this_id])) { // If this is the last widget
-		$class .= 'widget-last ';
-	}
-	//$params[0]['before_widget'] = str_replace('class="', $class, $params[0]['before_widget']); // Insert our new classes into "before widget"
-	$params[0]['before_widget'] = preg_replace('/class=\"/', "$class", $params[0]['before_widget'], 1);
-	return $params;
-}
-add_filter('dynamic_sidebar_params','widget_first_last_classes');
-
-/**
- * Searches for posts - Used on the 404 page
- */
-function search($term)
-{
-	global $wpdb;
-	$query = $wpdb -> prepare("SELECT * FROM `wp_posts` WHERE `post_title` LIKE '%s' AND `post_status` = 'publish' AND (`post_type` = 'post' OR `post_type` = 'page')", '%' . $term . '%');
-	return $wpdb -> get_results($query);
-}
-
-function pagination()
-{
-	$returner = '';
-	if(!is_single())
-	{
-		global $wp_query, $paged;
-		$total_posts = $wp_query -> found_posts;//wp_count_posts() -> publish;
-		$current_page = $paged;
-		$current_page = (($paged == 0) ? 1 : $paged);
-		$posts_per_page = get_option('posts_per_page', true); 
-		$num_pages = ceil($total_posts / $posts_per_page);
-		
-		if($current_page > 1)
-		{
-			$returner .= '<a href="' . get_pagenum_link($current_page - 1) . '" title="Forrige side">&laquo;</a> ';
-		}
-		
-		if($num_pages > 1)
-		{
-			for($i = 1; $i <= $num_pages; $i++)
-			{
-				if($current_page != $i)
-				{
-					$returner .= '<a href="' . get_pagenum_link($i) . '" title="Gå til side ' . $i . '" class="page">' . $i . '</a>';
-				}
-				else
-				{
-					$returner .= '<span class="current">' . $i . '</span>';
-				}
-			}
-		}
-		if($current_page < $num_pages && $num_pages > 1)
-		{
-			$returner .= ' <a href="' . get_pagenum_link($current_page + 1) . '" title="Næste side">&raquo;</a>';
-		}
-	}
-	return $returner;
-}
-
-/**
- * Fetch the page thats titled "footer" (case insensitive)
- */
-function footer($default = '')
-{
-	global $wpdb;
-	$content = $wpdb -> get_var("SELECT `post_content` FROM $wpdb->posts WHERE LOWER(`post_title`) = 'footer' AND `post_type` = 'page' AND `post_status` = 'publish' LIMIT 1");
-	if($content)
-	{
-		return apply_filters('the_content', $content); 
-	}
-	return $default;
-}
-/**
- * Fetch the page thats titled "404"
- */
-function error404($default = '<h1>404 Siden blev ikke fundet</h1><p>Siden du leder efter findes ikke på denne URL.</p>')
-{
-	global $wpdb;
-	$content = $wpdb -> get_row("SELECT * FROM $wpdb->posts WHERE LOWER(`post_title`) = '404' AND `post_type` = 'page' AND `post_status` = 'publish' LIMIT 1");
-	if($content)
-	{
-		$returner = '<h1>' . $content -> post_title . '</h1>';
-		$returner .= '<div class="text">';
-		$returner .= apply_filters('the_content', $content -> post_content);
-		$returner .= '</div>';
-		return $returner;
-	}
-	return $default;
-}
-
-/**
- * Camouflage emails in pages and posts
- */
-function camouflage_emails($content)
-{
-	$content = preg_replace_callback('/\b([A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4})\b/i', 'obfuscate_email', $content);
-	return $content;
-}
-add_filter('the_content', 'camouflage_emails');
-function obfuscate_email($string)
-{
-	$string = $string[0];
-	$safe = '';
-	foreach (str_split($string) as $letter)
-	{
-		switch (rand(1, 3))
-		{
-			// HTML entity code
-			case 1: $safe .= '&#'.ord($letter).';'; break;
-			// Hex character code
-			case 2: $safe .= '&#x'.dechex(ord($letter)).';'; break;
-			// Raw (no) encoding
-			case 3: $safe .= $letter;
-		}
-	}
-	return str_replace('@', '&#64;', $safe);
-}
-
 /**
  * DISABLED BY DEFAULT
  */
+
+ /**
+ * Mobile detection
+ */
+ /*$detection = new mobile();
+ if(false&&$detection -> isMobile())
+ {
+ 	function switch_to_mobile_templates($dir)
+	{
+		$template = dirname(__FILE__) . '/mobile/index.php';
+		if(is_page_template('contact.php'))
+		{
+			$template = dirname(__FILE__) . '/mobile/contact.php';
+		}
+		return $template;
+	}
+	add_filter('template_include', 'switch_to_mobile_templates');
+}*/
 
 /**
  * Add widget
