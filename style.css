@@ -36,18 +36,68 @@ body
 }
 .input
 {
-	margin-bottom:5px;
+	margin-bottom:10px;
+	position:relative;
 }
 	.input label
 	{
 		display:block;
+		width:140px;
+		text-align:right;
 		position:absolute;
-		width:100px;
+		cursor:pointer;
+		top:0;
+		line-height:25px;
+		height:25px;
 	}
-	.input input,
+	.input input[type="text"],
+	.input input[type="password"],
+	.input textarea,
+	.input select
+	{
+		margin-left:150px;
+		line-height:25px;
+		height:25px;
+		width:250px;
+		border:1px solid #CCC;
+	}
 	.input textarea
 	{
-		margin-left:110px;
+		height:150px;
+	}
+	.input input[type="radio"],
+	.input input[type="checkbox"]
+	{
+		margin-left:150px;
+		line-height:25px;
+		height:25px;
+		cursor:pointer;
+	}
+	.input select
+	{
+		cursor:pointer;
+	}
+	.input select[multiple="multiple"]
+	{
+		height:100px;
+	}
+		.input .check .checkok,
+		.input .validation .loadicon
+		{
+			display:none;
+			font-size:0.8em;
+			color:#999;
+		}
+	.input .desc
+	{
+		font-size:0.8em;
+		font-style:italic;
+		color:#999;
+		margin-left:150px;
+	}
+	.input .indented
+	{
+		margin-left:150px;
 	}
 .sidebar
 {
