@@ -31,6 +31,7 @@ add_action('admin_print_scripts-post-new.php', 'load_admin_seo_js');
 function add_seo_meta_box()
 {
 	add_meta_box('seobox', 'SEO', 'seo_meta_box', 'page', 'normal', 'high');
+	add_meta_box('seobox', 'SEO', 'seo_meta_box', 'post', 'normal', 'high');
 }
 function save_seo_stuff($post_id)
 {

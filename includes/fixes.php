@@ -33,9 +33,7 @@ add_filter('sanitize_title', 'improved_sanitize_title', 0);
  */
 function add_home_links($args)
 {
-	die(var_dump($args));
 	$args['show_home'] = true;
-	die(var_dump($args));
 	return $args;
 }
 add_filter('wp_page_menu_args', 'add_home_links');
